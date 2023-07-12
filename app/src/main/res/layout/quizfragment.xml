@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".quizfragment">
+
+    <TextView
+        android:id="@+id/letter_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:gravity="center"
+        android:text="Hello World!"
+        android:textColor="@color/black"
+        android:textSize="72sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/sky_button"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="8dp"
+        android:text="Sky Letter"
+        android:background="#B6164C"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/letter_text_view"
+        android:layout_marginRight="8dp" />
+
+    <Button
+        android:id="@+id/root_button"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Root Letter"
+        android:background="#B6164C"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/sky_button"
+        app:layout_constraintStart_toStartOf="@+id/sky_button"
+        app:layout_constraintTop_toBottomOf="@+id/sky_button" />
+
+    <Button
+        android:id="@+id/grass_button"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Grass Letter"
+        android:background="#B6164C"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/root_button"
+        app:layout_constraintStart_toStartOf="@+id/root_button"
+        app:layout_constraintTop_toBottomOf="@+id/root_button" />
+
+    <TextView
+        android:id="@+id/answer_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:gravity="center"
+        android:text="Right or Wrong"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="@+id/grass_button"
+        app:layout_constraintStart_toStartOf="@+id/grass_button"
+        app:layout_constraintTop_toBottomOf="@+id/grass_button" />
+
+    <Button
+        android:id="@+id/result_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Result"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/answer_text_view" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
