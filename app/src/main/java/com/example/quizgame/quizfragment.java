@@ -24,7 +24,7 @@ import java.util.Random;
 
 public class quizfragment extends Fragment {
 
-    private TextView letterTextView, answerTextView;
+    private TextView letterTextView, answerTextview;
     private char[] skyLetters = {'b', 'd', 'f', 'h', 'k', 'l', 't'};
     private char[] grassLetters = {'g', 'j', 'p', 'q', 'y'};
     private char[] rootLetters = {'a', 'c', 'e', 'i', 'm', 'n', 'o', 'r', 's', 'u', 'v', 'w', 'x', 'z'};
@@ -37,17 +37,18 @@ public class quizfragment extends Fragment {
 
     private DatabaseHelper databaseHelper;
     private List<String> questionList;
-    private List<String> quizQuestions;
+    public List<String> quizQuestions;
     private int currentQuestionIndex = 0;
-    private int correctAnswerCount = 0;
+    public int correctAnswerCount = 0;
 
+    @SuppressLint("MissingInflatedId")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.quizfragment, container, false);
 
         letterTextView = view.findViewById(R.id.letter_text_view);
-        //answerTextView = view.findViewById(R.id.answer_text_view);
+        answerTextview = view.findViewById(R.id.answer_text_view);
 
         Button skyButton = view.findViewById(R.id.sky_button);
         skyButton.setOnClickListener(new View.OnClickListener() {
@@ -73,13 +74,6 @@ public class quizfragment extends Fragment {
             }
         });
 
-        Button resultButton = view.findViewById(R.id.result_button);
-        resultButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showResult();
-            }
-        });
 
         // Initialize the database helper
         databaseHelper = new DatabaseHelper(getContext());
@@ -99,10 +93,10 @@ public class quizfragment extends Fragment {
 
     private void checkAnswer(String selectedOption) {
         if (selectedOption.equals(answerString)) {
-            answerTextView.setText("Awesome, your answer is right");
+            //answerTextView.setText("Awesome, your answer is right");
             correctAnswerCount++;
         } else {
-            answerTextView.setText("Incorrect! The answer is " + answerString);
+            //answerTextView.setText("Incorrect! The answer is " + answerString);
         }
 
         // Move to the next question
@@ -112,7 +106,7 @@ public class quizfragment extends Fragment {
         if (currentQuestionIndex < quizQuestions.size()) {
             displayQuestion();
         } else {
-            answerTextView.setText("Quiz completed");
+            answerTextview.setText("Quiz completed");
         }
     }
 
@@ -147,15 +141,7 @@ public class quizfragment extends Fragment {
     }
 
 
-    private void showResult() {
-        double score = (double) correctAnswerCount / quizQuestions.size() * 100;
-        String resultMessage = "Quiz Result:\n" +
-                "Correct Answers: " + correctAnswerCount + "\n" +
-                "Total Questions: " + quizQuestions.size() + "\n" +
-                "Score: " + score + "%";
 
-        answerTextView.setText(resultMessage);
-    }
 
     private void displayQuestion() {
         String question = quizQuestions.get(currentQuestionIndex);
@@ -163,7 +149,7 @@ public class quizfragment extends Fragment {
         letterTextView.setText("Select the letter: " + letter);
 
         // Reset the answer text view
-        answerTextView.setText("");
+        answerTextview.setText("");
         answerString = getAnswerStringFromLetter(letter);
     }
 

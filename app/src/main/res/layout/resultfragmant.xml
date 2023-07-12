@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".resultfragmant">
+
+    <TextView
+        android:id="@+id/result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Result"
+        android:textSize="50dp"
+        android:textColor="#B6164C"
+        android:layout_marginTop="100dp"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        />
+
+    <TextView
+        android:id="@+id/answer_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textAlignment="center"
+        android:text="Right or Wrong"
+        android:textSize="32sp"
+        app:layout_constraintTop_toBottomOf="@+id/result" />
+
+</LinearLayout>
