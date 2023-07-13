@@ -1,10 +1,9 @@
 package com.example.quizgame;
 
-import android.annotation.SuppressLint;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,45 +11,46 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class quizfragment extends Fragment {
 
-    private TextView letterTextView, answerTextview;
+public class quizfragment extends Fragment {
+    private TextView letterTextView, answerTextView;
     private char[] skyLetters = {'b', 'd', 'f', 'h', 'k', 'l', 't'};
     private char[] grassLetters = {'g', 'j', 'p', 'q', 'y'};
     private char[] rootLetters = {'a', 'c', 'e', 'i', 'm', 'n', 'o', 'r', 's', 'u', 'v', 'w', 'x', 'z'};
-    private String answerString = "";
-    private SQLiteDatabase quizDatabase;
-    private static final String DATABASE_NAME = "quiz.db";
-    private static final String TABLE_NAME = "questions";
-    private static final String COLUMN_ID = "_id";
-    private static final String COLUMN_QUESTION = "question";
-
     private DatabaseHelper databaseHelper;
-    private List<String> questionList;
-    public List<String> quizQuestions;
-    private int currentQuestionIndex = 0;
-    public int correctAnswerCount = 0;
+    private List<String> currentShiftAnswers;
+    private int currentQuestionCount = 0;
+    private int currentShiftNumber = 1;
+    private String answerString = "";
+    String L;
+    int Score;
 
-    @SuppressLint("MissingInflatedId")
-    @Nullable
+
+    public quizfragment() {
+        // Required empty public constructor
+    }
+
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.quizfragment, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.quizfragment, container, false);
 
-        letterTextView = view.findViewById(R.id.letter_text_view);
-        answerTextview = view.findViewById(R.id.answer_text_view);
 
-        Button skyButton = view.findViewById(R.id.sky_button);
+        databaseHelper = new DatabaseHelper(requireContext());
+        currentShiftAnswers = new ArrayList<>();
+        L=getRandomLetter();
+        letterTextView = rootView.findViewById(R.id.letter_text_view);
+        letterTextView.setText(L);
+
+        answerTextView = rootView.findViewById(R.id.answer_text_view);
+
+        Button skyButton = rootView.findViewById(R.id.sky_button);
         skyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,7 +58,7 @@ public class quizfragment extends Fragment {
             }
         });
 
-        Button grassButton = view.findViewById(R.id.grass_button);
+        Button grassButton = rootView.findViewById(R.id.grass_button);
         grassButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,7 +66,7 @@ public class quizfragment extends Fragment {
             }
         });
 
-        Button rootButton = view.findViewById(R.id.root_button);
+        Button rootButton = rootView.findViewById(R.id.root_button);
         rootButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,98 +74,66 @@ public class quizfragment extends Fragment {
             }
         });
 
-
-        // Initialize the database helper
-        databaseHelper = new DatabaseHelper(getContext());
-
-        // Retrieve the list of questions from the database
-        questionList = getQuestionList();
-
-        // Generate the quiz questions
-        generateQuizQuestions();
-
-        // Display the first question
-        displayQuestion();
-
-        return view;
+        return rootView;
     }
+    private void checkAnswer(String expectedAnswer) {
 
 
-    private void checkAnswer(String selectedOption) {
-        if (selectedOption.equals(answerString)) {
-            //answerTextView.setText("Awesome, your answer is right");
-            correctAnswerCount++;
+
+        if (expectedAnswer.equals(answerString)) {
+            //answerTextView.setText("Correct! The letter '"+L+"' is a "+answerString+".");
+            currentShiftAnswers.add("Correct!");
+            Score=Score+1;
         } else {
-            //answerTextView.setText("Incorrect! The answer is " + answerString);
+            //answerTextView.setText("Incorrect! The letter ' "+L+"' is a "+answerString+".");
+            currentShiftAnswers.add("InCorrect!");
+        }
+        currentQuestionCount++;
+
+        if (currentQuestionCount == 5) {
+            answerTextView.setText("Quiz Completed!!!");
+            currentShiftAnswers.add("Total Score "+Score);
+            processShiftCompletion();
         }
 
-        // Move to the next question
-        currentQuestionIndex++;
+        // Wait for 5 seconds and create a new question
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                L=getRandomLetter();
+                letterTextView.setText(L);
+                answerTextView.setText("");
+            }
+        }, 1000); // 3000 milliseconds = 3 seconds
+    }
 
-        // Check if all questions have been answered
-        if (currentQuestionIndex < quizQuestions.size()) {
-            displayQuestion();
-        } else {
-            answerTextview.setText("Quiz completed");
+    private void processShiftCompletion() {
+        if (!currentShiftAnswers.isEmpty()) {
+            databaseHelper.addShift(currentShiftNumber, currentShiftAnswers);
+            currentShiftNumber++;
+            currentQuestionCount = 0;
+            currentShiftAnswers.clear();
+            Score= 0;
         }
     }
-
-    private List<String> getQuestionList() {
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        List<String> questionList = new ArrayList<>();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                @SuppressLint("Range") String question = cursor.getString(cursor.getColumnIndex(COLUMN_QUESTION));
-                questionList.add(question);
-            } while (cursor.moveToNext());
-            cursor.close();
+    private String getRandomLetter() {
+        Random random = new Random();
+        int category = random.nextInt(3);
+        char letter;
+        switch (category) {
+            case 0:
+                letter = skyLetters[random.nextInt(skyLetters.length)];
+                answerString = "Sky Letter";
+                break;
+            case 1:
+                letter = grassLetters[random.nextInt(grassLetters.length)];
+                answerString = "Grass Letter";
+                break;
+            default:
+                letter = rootLetters[random.nextInt(rootLetters.length)];
+                answerString = "Root Letter";
+                break;
         }
-
-        db.close();
-        return questionList;
+        return String.valueOf(letter);
     }
-
-    private void generateQuizQuestions() {
-        quizQuestions = new ArrayList<>();
-
-        // Shuffle the question list
-        Collections.shuffle(questionList);
-
-        // Select the first 5 questions from the shuffled list
-        int questionCount = Math.min(5, questionList.size());
-        for (int i = 0; i < questionCount; i++) {
-            quizQuestions.add(questionList.get(i));
-        }
-    }
-
-
-
-
-    private void displayQuestion() {
-        String question = quizQuestions.get(currentQuestionIndex);
-        char letter = getLetterFromQuestion(question);
-        letterTextView.setText("Select the letter: " + letter);
-
-        // Reset the answer text view
-        answerTextview.setText("");
-        answerString = getAnswerStringFromLetter(letter);
-    }
-
-    private char getLetterFromQuestion(String question) {
-        String[] words = question.split(" ");
-        return words[words.length - 1].charAt(0);
-    }
-
-    private String getAnswerStringFromLetter(char letter) {
-        if (Arrays.binarySearch(skyLetters, letter) >= 0) {
-            return "Sky Letter";
-        } else if (Arrays.binarySearch(grassLetters, letter) >= 0) {
-            return "Grass Letter";
-        } else {
-            return "Root Letter";
-        }
-    }
-
 }

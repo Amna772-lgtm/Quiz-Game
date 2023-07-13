@@ -1,19 +1,24 @@
 package com.example.quizgame;
 
-
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import com.example.quizgame.quizfragment;
+
+import java.util.List;
+
 
 public class resultfragmant extends Fragment {
+    private RecyclerView recyclerView;
+    private ShiftsAdapter adapter;
+    private DatabaseHelper databaseHelper;
+    private List<List<String>> shiftList;
 
-    private TextView answerTextView;
 
     public resultfragmant() {
         // Required empty public constructor
@@ -24,19 +29,16 @@ public class resultfragmant extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.resultfragmant, container, false);
+        View rootView = inflater.inflate(R.layout.resultfragmant, container, false);
 
-        answerTextView = view.findViewById(R.id.answer_view);
-        return view;
-    }
+        databaseHelper = new DatabaseHelper(requireContext());
+        shiftList = databaseHelper.getAllShifts();
+        adapter = new ShiftsAdapter(shiftList);
 
-    private void showResult(quizfragment qf) {
-        double score = (double) qf.correctAnswerCount / qf.quizQuestions.size() * 100;
-        String resultMessage = "Quiz Result:\n" +
-                "Correct Answers: " + qf.correctAnswerCount + "\n" +
-                "Total Questions: " + qf.quizQuestions.size() + "\n" +
-                "Score: " + score + "%";
+        recyclerView = rootView.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerView.setAdapter(adapter);
 
-        answerTextView.setText(resultMessage);
+        return rootView;
     }
 }

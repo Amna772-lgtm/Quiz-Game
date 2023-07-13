@@ -2,11 +2,22 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/container"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Welcome to Quiz Game"
+        android:textColor="#B6164C"
+        android:textSize="50dp"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="230dp"/>
 
 </LinearLayout>
